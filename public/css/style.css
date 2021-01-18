@@ -1,0 +1,190 @@
+body {
+  background-image: linear-gradient(-315deg, #06bcfb 0%, #4884ee 74%);
+}
+
+/*# sourceMappingURL=style.css.map */
+.main{
+    background-color: white;
+    height: 500px;
+    width: 800px;
+    position: absolute;
+    top: 90px;
+    left:100px; 
+    
+}
+/* appx word */
+.para{
+    position: absolute;
+    left: 475px;
+    top: -70px;
+    color: white;
+    font-size: 2rem;
+    font-family: "Crimson Text",sans-serif;
+    background-color: black;
+    width: 75px;
+    height: 25px;
+    padding: 25px;
+    
+}
+/* slogan container */
+.main-1{
+    background-color:rgba(0, 73, 183,.2);
+    width: 265px;
+    height: 500px;
+}
+/* slogan word */
+.para__1{
+    position: absolute;
+    bottom:0px;
+    left: 30px;
+    color: blue;
+    font-size: 1.5rem;
+    font-family: "Crimson Text",sans-serif;
+}
+/* user-image */
+.fa-user{
+    position: absolute;
+    top: 100px;
+    right: 235px;
+}
+/* envelope-image */
+.user-detail .fa-envelope{
+    border: 1px solid #333;
+    border-right: none;
+    padding: 10px;
+    background: dodgerblue;
+    color: white;
+    min-width: 50px;
+    text-align: center;
+    font-size: 1.5rem;
+    margin-left: 2rem;
+    position: absolute;
+    top: 200px;
+    right: 350px;
+}
+/* username-input */
+.user-detail .email{
+    border: 1px solid #333;
+    border-left: none;
+    padding: 13px;
+    min-width: 60px;
+    font-size: 1rem;
+    margin-left: 2rem;
+    position: absolute;
+    top: 200px;
+    right: 135px;
+
+}
+/* key-image */
+.user-detail .fa-key{
+    border: 1px solid #333;
+    border-right: none;
+    padding: 10px;
+    background: dodgerblue;
+    color: white;
+    min-width: 50px;
+    text-align: center;
+    font-size: 1.5rem;
+    margin-left: 2rem;
+    position: absolute;
+    top: 275px;
+    right: 350px;
+}
+/* psw-input */
+.user-detail .psw{
+    border: 1px solid #333;
+    border-left: none;
+    padding: 13px;
+    min-width: 60px;
+    font-size: 1rem;
+    margin-left: 2rem;
+    position: absolute;
+    top: 275px;
+    right: 135px;
+
+}
+/* login-button */
+.user-detail .login{
+    padding: 5px;
+    background: dodgerblue;
+    color: white;
+    width: 25%;
+    text-align: center;
+    font-size: 1rem;
+    margin-left: 2rem;
+    position: absolute;
+    top: 375px;
+    right: 170px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+/* check-box */
+.checkbox{
+    position: absolute;
+    top: 0px;
+    right: 100px;
+    cursor: pointer;
+}
+/* remb-label */
+label{
+    position: absolute;
+    top: 350px;
+    right: 300px;
+}
+/* cancel-button */
+.cancel{
+    padding: 5px;
+    color: blue;
+    min-width: 50px;
+    text-align: center;
+    font-size: 1rem;
+    margin-left: 2rem;
+    position: absolute;
+    top: 460px;
+    right: 450px;
+    border-radius: 10px;
+    cursor: pointer;
+    outline: none;
+}
+/* frg-psw */
+.frgpsw{
+    padding: 5px;
+    color: blue;
+    min-width: 50px;
+    text-align: center;
+    font-size: 1rem;
+    margin-left: 2rem;
+    position: absolute;
+    top: 460px;
+    right: 50px;
+    border-radius: 10px;
+    outline: none;
+    cursor: pointer;
+}
+.user-detail .fa-eye-slash{
+    padding: 10px;
+    color:black;
+    min-width: 50px;
+    text-align: center;
+    font-size: 1.5rem;
+    margin-left: 2rem;
+    position: absolute;
+    top: 275px;
+    right: 115px;
+}
+/* hover-effects */
+a{
+    text-decoration: none;
+}
+button:hover{
+    color: white;
+    transform: scale(1.5);
+    background-color: red;
+}
+a:hover,
+a:active{
+    color:red;
+}
+@media screen and (max-width: 480px){
+    
+}
