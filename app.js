@@ -33,7 +33,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 //mongoose connection to mongodb
 
-mongoose.connect("mongodb+srv://charanmurugan:Charan2002@charanmurugan.axjh5.mongodb.net/userDB?retryWrites=true&w=majority",{ useNewUrlParser: true , useUnifiedTopology: true, });
+mongoose.connect("mongodb://localhost:27017/userDB",{ useNewUrlParser: true , useUnifiedTopology: true, });
 
 // creating schema
 const UserSchema= new mongoose.Schema({
