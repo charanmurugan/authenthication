@@ -47,7 +47,7 @@ UserSchema.plugin(findOrCreate);
 
 /** before describing model add the plugin of the mongoose encryption */
 
-// UserSchema.plugin(encrypt,{secret:process.env.Secret_Value,encryptedFields: ['password']});
+ UserSchema.plugin(encrypt,{secret:process.env.Secret_Value,encryptedFields: ['password']});
 
 // create model for the database
 const User=new mongoose.model("User",UserSchema);
@@ -154,18 +154,18 @@ app.get('/logout', function(req, res){
 
 app.post("/register",function(req,res){
 /* <_________________ *******   simple  *********_______________> */
-    // const user= new User({
-    //     username:req.body.username,
-    //     password:req.body.psw
-    // })
-    // user.save(function(err,foundItems){
-    //     if(err){
-    //           console.log(err);
-    //     }else{
-    //         res.render("secrets");
+    const user= new User({
+        username:req.body.username,
+        password:req.body.psw
+    })
+    user.save(function(err,foundItems){
+        if(err){
+              console.log(err);
+        }else{
+            res.render("secrets");
     
-    //     }
-    // });
+        }
+    });
 /* <_________________ *******   simple  *********_______________> */
 /* <_________________ *******   encryption  *********_______________> */
 
@@ -184,17 +184,17 @@ app.post("/register",function(req,res){
 /* <_________________ *******  encryption  *********_______________> */
 /* <_________________ *******  hashing  *********_______________> */
 
-// const user= new User({
-//             username:req.body.username,
-//             password:md5(req.body.psw)
-//         })
-//         user.save(function(err,foundItems){
-//             if(err){
-//                   console.log(err);
-//             }else{
-//                 res.render("secrets");
-//             }
-//         });
+const user= new User({
+            username:req.body.username,
+            password:md5(req.body.psw)
+        })
+        user.save(function(err,foundItems){
+            if(err){
+                  console.log(err);
+            }else{
+                res.render("secrets");
+            }
+        });
 /* <_________________ *******  hashing  *********_______________> */
 /* <_________________ *******  bcrypt  *********_______________> */
     const saltRounds = 10;
@@ -213,53 +213,53 @@ app.post("/register",function(req,res){
 });
 app.post("/login",function(req,res){
 /* <_________________ *******   simple  *********_______________> */
-    // User.findOne({username:req.body.username},function(err,fountItems){
-    //          if(err){
-    //              console.log(err);
-    //          }else{
-    //              if(fountItems){
-    //                  if(fountItems.password===req.body.psw){
-    //                      res.render("secrets");
-    //                  }else{
-    //                      res.render("login");
-    //                  }
+    User.findOne({username:req.body.username},function(err,fountItems){
+             if(err){
+                 console.log(err);
+             }else{
+                 if(fountItems){
+                     if(fountItems.password===req.body.psw){
+                         res.render("secrets");
+                     }else{
+                         res.render("login");
+                     }
                      
-    //              }
-    //          }
-    //         });  
+                 }
+             }
+            });  
 /* <_________________ *******   simple  *********_______________> */
 /* <_________________ *******  encryption  *********_______________> */
-// User.findOne({username:req.body.username},function(err,fountItems){
-//              if(err){
-//                  console.log(err);
-//              }else{
-//                  if(fountItems){
-//                      if(fountItems.password===req.body.psw){
-//                          res.render("secrets");
-//                      }else{
-//                          res.render("login");
-//                      }
+User.findOne({username:req.body.username},function(err,fountItems){
+             if(err){
+                 console.log(err);
+             }else{
+                 if(fountItems){
+                     if(fountItems.password===req.body.psw){
+                         res.render("secrets");
+                     }else{
+                         res.render("login");
+                     }
                      
-//                  }
-//              }
-//             });  
+                 }
+             }
+            });  
     /* when save is find it automatically decrypt*/
 /* <_________________ *******  encryption  *********_______________> */
 /* <_________________ *******  hashing  *********_______________> */
-        //  User.findOne({username:req.body.username},function(err,fountItems){
-        //      if(err){
-        //          console.log(err);
-        //      }else{
-        //          if(fountItems){
-        //              if(fountItems.password===md5(req.body.psw)){
-        //                  res.render("secrets");
-        //              }else{
-        //                  res.render("login");
-        //              }
+         User.findOne({username:req.body.username},function(err,fountItems){
+             if(err){
+                 console.log(err);
+             }else{
+                 if(fountItems){
+                     if(fountItems.password===md5(req.body.psw)){
+                         res.render("secrets");
+                     }else{
+                         res.render("login");
+                     }
                      
-        //          }
-        //      }
-        //     });   
+                 }
+             }
+            });   
 /* <_________________ *******  hashing  *********_______________> */
 /* <_________________ *******  bcrypt  *********_______________> */
 
