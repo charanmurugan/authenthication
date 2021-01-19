@@ -1,9 +1,6 @@
 
 /* BASIC */
 
-html {
-    background-color: #56baed;
-  }
   
   body {
     font-family: "Poppins", sans-serif;
@@ -289,4 +286,35 @@ html {
   #icon {
     width:60%;
   }
+  .btn-google{
+    width: 200px;
+    position: relative;
+    left: 125px;
+  }
+  .btn-facebook{
+    width: 200px;
+    position: relative;
+    left: 125px;
+  }
+  .development{
+    position: absolute;
+    left: 300px;
+    width: 250px;
+    top: 50%;
+  }
+  @media only screen and (max-width: 600px) {
+    .btn-google{
+      width: 200px;
+      left: 50px;
+    }
+    .btn-facebook{
+      width: 200px;
+      left: 50px;
+    }
+    .development{
+      position: absolute;
+      left: 10px;
+    }
+  }
+  
   

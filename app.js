@@ -1,18 +1,18 @@
 require('dotenv').config()/**for assiging environmental variables */
 const express= require("express");
 const bodyParser= require("body-parser");
-/**for passport */
-const passport=require("passport");
-const passportLocalMongoose=require("passport-local-mongoose");
-const session=require('express-session');
-/**for passport */
 const mongoose=require("mongoose");
 const bcrypt=require("bcrypt");/**for bcryption */
 const app=express();
 var encrypt = require('mongoose-encryption');/**for encryption */
 const md5 = require('md5');/**for hashing */
+ const passport =require('passport');
+const session=require('express-session');
+ const  findOrCreate=require('mongoose-findorcreate');
+const GoogleStrategy = require( 'passport-google-oauth2' ).Strategy;
+const  FacebookStrategy=require('passport-facebook').Strategy;
 
-// for static files acess 
+//for static files acess 
 app.use(express.static("public"));
 
 //for acess user detail
@@ -24,43 +24,65 @@ app.use(bodyParser.urlencoded({
 app.set("view engine","ejs");
 
 
-//initialising express-session
-
 app.use(session({
-	secret:"our little secret.",
-	resave:false,
-	saveUninitialized:false
+    secret:process.env.Secret_Value,
+    resave:false,
+    saveUninitialized:false
 }));
-
-//initialise passport
-
 app.use(passport.initialize());
 app.use(passport.session());
-
 //mongoose connection to mongodb
 
-mongoose.connect("mongodb://localhost:27017/userDB",{ useNewUrlParser: true , useUnifiedTopology: true, });
-mongoose.set("useCreateIndex",true);
+mongoose.connect("mongodb+srv://charanmurugan:Charan2002@charanmurugan.axjh5.mongodb.net/userDB?retryWrites=true&w=majority",{ useNewUrlParser: true , useUnifiedTopology: true, });
 
 // creating schema
 const UserSchema= new mongoose.Schema({
     username:String,
-    password:String
+    password:String,
+    googleId:String,
+    facebookId:String,
+    secrets:String
 });
+UserSchema.plugin(findOrCreate);
 
 /** before describing model add the plugin of the mongoose encryption */
+
 // UserSchema.plugin(encrypt,{secret:process.env.Secret_Value,encryptedFields: ['password']});
-// add passportLocalMongoose as a plugin to the schema
-UserSchema.plugin(passportLocalMongoose);
 
 // create model for the database
 const User=new mongoose.model("User",UserSchema);
 
-// intialize passport serialize & deserialize
+passport.serializeUser(function(user, done) {
+    done(null, user);
+  });
+  
+  passport.deserializeUser(function(user, done) {
+    done(null, user);
+  });
+passport.use(new GoogleStrategy({
+    clientID:process.env.Client_Id,
+    clientSecret:process.env.Client_Secret,
+    callbackURL: "http://localhost:3000/auth/google/secrets",
+    passReqToCallback   : true
+  },
+  function(request, accessToken, refreshToken, profile, done) {
+    User.findOrCreate({ googleId: profile.id }, function (err, user) {
+      return done(err, user);
+    });
+  }
+));
+passport.use(new FacebookStrategy({
+    clientID:process.env.FaceBook_App_Id,
+    clientSecret: process.env.FaceBook_App_Secret,
+    callbackURL: "http://localhost:3000/auth/facebook/secrets"
+  },
+  function(accessToken, refreshToken, profile, cb) {
+    User.findOrCreate({ facebookId: profile.id }, function (err, user) {
+      return cb(err, user);
+    });
+  }
+));
 
-passport.use(User.createStrategy());
-passport.serializeUser(User.serializeUser());
-passport.deserializeUser(User.deserializeUser());
 
 
 app.get("/",function(req,res){
@@ -72,15 +94,63 @@ app.get("/register",function(req,res){
 app.get("/login",function(req,res){
     res.render("login");
 });
+app.get('/auth/google',
+  passport.authenticate('google', { scope:
+      [ 'email', 'profile' ] }
+));
+
+app.get( '/auth/google/secrets',
+    passport.authenticate( 'google', {
+        successRedirect: '/secrets',
+        failureRedirect: '/login'
+}));
+app.get('/auth/facebook',
+  passport.authenticate('facebook'));
+
+app.get('/auth/facebook/secrets',
+  passport.authenticate('facebook', { failureRedirect: '/login' }),
+  function(req, res) {
+    // Successful authentication, redirect home.
+    res.redirect('/secrets');
+  });
 app.get("/secrets",function(req,res){
-    if(req.isAuthenticated()){
-        res.render("secrets");
-    }
-    else{
-        res.redirect("/login");
-    }
+   if(req.isAuthenticated()){
+    User.find({"secret":{$ne:null}},function(err,foundUser){
+		if(err){
+			console.log(err)
+		}
+		else{
+			if(foundUser){
+				res.render("secrets",{usersWithSecrets:foundUser})
+			}
+		}
+	})
+   }else{
+       res.redirect("/register");
+   }
    
 });
+app.get("/secretsPage",function(req,res){
+    User.find({"secret":{$ne:null}},function(err,foundUser){
+		if(err){
+			console.log(err)
+		}
+		else{
+			if(foundUser){
+				res.render("secrets",{usersWithSecrets:foundUser})
+			}
+		}
+	})
+    
+ });
+ app.get("/submit",function(req,res){
+		res.render("submit",{value:"UNDER DEVELOPMENT"});
+	
+});
+app.get('/logout', function(req, res){
+    req.logout();
+    res.redirect('/');
+  });
 
 app.post("/register",function(req,res){
 /* <_________________ *******   simple  *********_______________> */
@@ -127,33 +197,19 @@ app.post("/register",function(req,res){
 //         });
 /* <_________________ *******  hashing  *********_______________> */
 /* <_________________ *******  bcrypt  *********_______________> */
-    // const saltRounds = 10;
-    // bcrypt.hash(req.body.psw,saltRounds,function(err,hash){
-    //     const user =new User({
-    //         username:req.body.username,
-    //         password:hash
-    //     });
-    //     user.save(function(err){
-    //         if(!err){
-    //             res.render("secrets");
-    //         }
-    //     });
-    // });
+    const saltRounds = 10;
+    bcrypt.hash(req.body.psw,saltRounds,function(err,hash){
+        const user =new User({
+            username:req.body.username,
+            password:hash
+        });
+        user.save(function(err){
+            if(!err){
+                res.redirect("/secrets");
+            }
+        });
+    });
 /* <_________________ *******  bcrypt  *********_______________> */
-/* <_________________ *******  passport local  *********_______________> */
-// User.register({username:req.body.username},req.body.psw,function(err,user){
-//     if(err){
-//         console.log(err);
-//         res.redirect("/register");
-//     }
-//     else{
-//         passport.authenticate("local")(req,res,function(){
-//             res.redirect("/secrets")
-//         });
-//     }
-// });
-/* <_________________ *******  passport local  *********_______________> */
-    
 });
 app.post("/login",function(req,res){
 /* <_________________ *******   simple  *********_______________> */
@@ -207,43 +263,25 @@ app.post("/login",function(req,res){
 /* <_________________ *******  hashing  *********_______________> */
 /* <_________________ *******  bcrypt  *********_______________> */
 
-// User.findOne({username:req.body.username},function(err,fountItems){
-//      if(err){
-//          console.log(err);
-//      }else{
-//          if(fountItems){
-//              bcrypt.compare(req.body.psw,fountItems.password,function(err,result){
-//                 if(result==true){
-//                     res.render("secrets");
-//                 }
-//                 else{
-//                    console.log("invalid login credentials");
-//                     res.redirect("/login");
-//                 }
-//              } );
+User.findOne({username:req.body.username},function(err,fountItems){
+     if(err){
+         console.log(err);
+     }else{
+         if(fountItems){
+             bcrypt.compare(req.body.psw,fountItems.password,function(err,result){
+                if(result==true){
+                    res.redirect("/secretsPage");
+                }
+                else{
+                   console.log("invalid login credentials");
+                    res.redirect("/login");
+                }
+             } );
              
-//          }
-//      }
-    // }); 
-/* <_________________ *******  bcrypt  *********_______________> */  
-/* <_________________ *******  passport local  *********_______________> */
-const user=new User({
-    username:req.body.username,
-    password:req.body.psw
-});
-
-req.login(user,function(err){
-    if(err){
-        console.log(err);
-        res.render("register");
-    }
-    else{
-        passport.authenticate("local")(req,res,function(){
-            res.redirect("/secrets")
-        });
-    }
-})   
-/* <_________________ *******  passport local  *********_______________> */ 
+         }
+     }
+    }); 
+/* <_________________ *******  bcrypt  *********_______________> */   
 });
 
 
