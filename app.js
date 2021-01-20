@@ -9,6 +9,7 @@ const md5 = require('md5');/**for hashing */
  const passport =require('passport');
 const session=require('express-session');
  const  findOrCreate=require('mongoose-findorcreate');
+ const LocalStrategy = require('passport-local').Strategy;
 const GoogleStrategy = require( 'passport-google-oauth2' ).Strategy;
 const  FacebookStrategy=require('passport-facebook').Strategy;
 
@@ -60,8 +61,8 @@ passport.serializeUser(function(user, done) {
     done(null, user);
   });
 passport.use(new GoogleStrategy({
-    clientID:process.env.Client_Id,
-    clientSecret:process.env.Client_Secret,
+    clientID:process.env.Client_Id, /* --->google client id */
+    clientSecret:process.env.Client_Secret,  /* --->google client secret */
     callbackURL: "http://localhost:3000/auth/google/secrets",
     passReqToCallback   : true
   },
@@ -72,8 +73,8 @@ passport.use(new GoogleStrategy({
   }
 ));
 passport.use(new FacebookStrategy({
-    clientID:process.env.FaceBook_App_Id,
-    clientSecret: process.env.FaceBook_App_Secret,
+    clientID:process.env.FaceBook_App_Id, /* --->facebook client id */
+    clientSecret: process.env.FaceBook_App_Secret, /* --->facebook client id */
     callbackURL: "http://localhost:3000/auth/facebook/secrets"
   },
   function(accessToken, refreshToken, profile, cb) {
@@ -82,9 +83,6 @@ passport.use(new FacebookStrategy({
     });
   }
 ));
-
-
-
 app.get("/",function(req,res){
    res.render("home");
 });
@@ -169,17 +167,17 @@ app.post("/register",function(req,res){
 /* <_________________ *******   simple  *********_______________> */
 /* <_________________ *******   encryption  *********_______________> */
 
-// const user= new User({
-//         username:req.body.username,
-//         password:req.body.psw
-//     })
-//     user.save(function(err,foundItems){
-//         if(err){
-//               console.log(err);
-//         }else{
-//             res.render("secrets");
-//         }
-//     });
+const user= new User({
+        username:req.body.username,
+        password:req.body.psw
+    })
+    user.save(function(err,foundItems){
+        if(err){
+              console.log(err);
+        }else{
+           res.render("secrets");
+        }
+    });
     /* when save is find it automatically encrypt*/
 /* <_________________ *******  encryption  *********_______________> */
 /* <_________________ *******  hashing  *********_______________> */
@@ -205,7 +203,7 @@ const user= new User({
         });
         user.save(function(err){
             if(!err){
-                res.redirect("/secrets");
+                res.render("secrets");
             }
         });
     });
@@ -270,7 +268,7 @@ User.findOne({username:req.body.username},function(err,fountItems){
          if(fountItems){
              bcrypt.compare(req.body.psw,fountItems.password,function(err,result){
                 if(result==true){
-                    res.redirect("/secretsPage");
+                   res.render("secrets");
                 }
                 else{
                    console.log("invalid login credentials");
